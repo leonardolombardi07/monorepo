@@ -15,3 +15,7 @@ catalog:
 
 engineStrict: true
 minimumReleaseAge: 1440
+allowBuilds:
+  '@azure/msal-node-extensions': false
+  '@microsoft/m365agentstoolkit-cli': false
+  keytar: false
