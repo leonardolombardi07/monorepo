@@ -1,21 +1,39 @@
-import { useEffect, useState } from "react";
+/** Where the add-in is running, as reported by `Office.onReady`. */
+export type OfficeInfo = {
+  /** Office app hosting the add-in, or null when opened in a plain browser tab. */
+  host: Office.HostType | null;
+  /** Platform the host runs on (Windows, web, Mac...), or null outside Office. */
+  platform: Office.PlatformType | null;
+};
 
-export type OfficeHostState =
-  | { status: "loading" }
-  | { status: "ready"; host: Office.HostType | null };
+const OUTSIDE_OFFICE: OfficeInfo = { host: null, platform: null };
 
-export function useOfficeHost(): OfficeHostState {
-  const [state, setState] = useState<OfficeHostState>({ status: "loading" });
+/**
+ * How long to wait for Office before assuming we're in a plain browser tab.
+ * Inside Office, onReady normally fires well under a second.
+ */
+const OFFICE_READY_TIMEOUT_MS = 3000;
 
-  useEffect(() => {
-    if (typeof Office === "undefined") return;
+/**
+ * Resolves once Office.js has initialized. Excel APIs throw if called before
+ * this, so the app only mounts after it.
+ *
+ * Outside Office (e.g. https://localhost:3000 in a browser), the current CDN
+ * build of Office.js throws "hostInfo validation failed" while loading and
+ * `Office.onReady` never resolves, so we fall back to null host/platform
+ * after a timeout instead of hanging forever.
+ */
+export async function waitForOffice(): Promise<OfficeInfo> {
+  if (typeof Office === "undefined" || typeof Office.onReady !== "function") {
+    return OUTSIDE_OFFICE;
+  }
 
-    Office.onReady()
-      .then(({ host }) => setState({ status: "ready", host }))
-      .catch((error: unknown) => {
-        console.error("Office.js failed to initialize", error);
-      });
-  }, []);
+  const ready = Office.onReady().then(
+    (info): OfficeInfo => ({ host: info.host ?? null, platform: info.platform ?? null }),
+  );
+  const timeout = new Promise<OfficeInfo>((resolve) =>
+    setTimeout(() => resolve(OUTSIDE_OFFICE), OFFICE_READY_TIMEOUT_MS),
+  );
 
-  return state;
+  return Promise.race([ready, timeout]);
 }

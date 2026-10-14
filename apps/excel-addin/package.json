@@ -16,6 +16,8 @@
   "dependencies": {
     "@repo/api-client": "workspace:*",
     "@repo/ui": "workspace:*",
+    "@tanstack/react-query": "^5.104.2",
+    "@tanstack/react-router": "^1.170.44",
     "cn": "^0.4.0",
     "react": "catalog:",
     "react-dom": "catalog:"
@@ -23,6 +25,9 @@
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
     "@tailwindcss/vite": "catalog:",
+    "@tanstack/react-query-devtools": "^5.104.2",
+    "@tanstack/react-router-devtools": "^1.167.2",
+    "@tanstack/router-plugin": "^1.168.45",
     "@types/node": "catalog:",
     "@types/office-js": "^1.0.611",
     "@types/react": "catalog:",
