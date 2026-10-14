@@ -10,13 +10,15 @@
       "onFail": "download"
     }
   },
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
     "typecheck": "turbo run typecheck",
-    "lint": "biome lint .",
-    "format": "biome format --write .",
-    "check": "biome check --write .",
+    "format-and-lint": "biome check .",
+    "format-and-lint:fix": "biome check . --write",
     "check:ci": "biome ci ."
   },
   "devDependencies": {

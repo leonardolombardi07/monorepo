@@ -1,3 +1,8 @@
 packages:
   - "apps/*"
   - "packages/*"
+catalog:
+  typescript: ^7.0.2
+  
+engineStrict: true
+minimumReleaseAge: 1440
