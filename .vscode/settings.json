@@ -1,4 +1,5 @@
 {
+  "css.lint.unknownAtRules": "ignore",
   "editor.defaultFormatter": "biomejs.biome",
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {

@@ -1,6 +1,8 @@
 import { createApiClient, type HealthResponse } from "@repo/api-client";
+import { Button } from "@repo/ui/components/button";
+import { Card } from "@repo/ui/components/card";
 import { useEffect, useState } from "react";
-import { useOfficeHost } from "./lib/office";
+import { useOfficeHost } from "@/lib/office";
 
 const api = createApiClient("http://localhost:3000");
 
@@ -37,7 +39,7 @@ export default function App() {
   const isExcel = office.status === "ready" && office.host === Office.HostType.Excel;
 
   return (
-    <main>
+    <main className="flex flex-col gap-3 p-4 text-sm">
       <p>
         Office:{" "}
         {office.status === "loading"
@@ -45,15 +47,15 @@ export default function App() {
           : (office.host ?? "no host")}
       </p>
 
+      <Card>Hello</Card>
+
       {backendError && <p>Backend unreachable: {backendError}</p>}
       {!backendError && !health && <p>Checking backend…</p>}
       {health && <p>Backend status: {health.status}</p>}
 
-      {isExcel && (
-        <button type="button" onClick={handleWrite}>
-          Write to selected cell
-        </button>
-      )}
+      <Button>Hi</Button>
+
+      {isExcel && <Button onClick={handleWrite}>Write to selected cell</Button>}
       {excelError && <p>Excel error: {excelError}</p>}
     </main>
   );

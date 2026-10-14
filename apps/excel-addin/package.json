@@ -15,11 +15,14 @@
   },
   "dependencies": {
     "@repo/api-client": "workspace:*",
+    "@repo/ui": "workspace:*",
+    "cn": "^0.4.0",
     "react": "catalog:",
     "react-dom": "catalog:"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
+    "@tailwindcss/vite": "catalog:",
     "@types/node": "catalog:",
     "@types/office-js": "^1.0.611",
     "@types/react": "catalog:",
@@ -28,6 +31,7 @@
     "office-addin-debugging": "^7.0.1",
     "office-addin-dev-certs": "^3.0.1",
     "office-addin-manifest": "^3.0.1",
+    "tailwindcss": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:"
   }

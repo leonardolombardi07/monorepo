@@ -1,7 +1,10 @@
 {
   "extends": "@repo/typescript-config/react.json",
   "compilerOptions": {
-    "types": ["vite/client", "office-js"]
+    "types": ["vite/client", "office-js"],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "include": ["src", "vite.config.ts"]
 }

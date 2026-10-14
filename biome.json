@@ -56,6 +56,28 @@
       }
     }
   },
+  "overrides": [
+    {
+      "includes": ["packages/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["@/**"],
+                    "message": "Packages must not use the '@/' alias. Import through the package name instead, e.g. '@repo/ui/lib/utils'."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
   "javascript": {
     "formatter": {
       "quoteStyle": "double",
