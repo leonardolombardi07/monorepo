@@ -1,0 +1,22 @@
+{
+  "name": "ai-frontend",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.11.2",
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "12.11.2",
+      "onFail": "download"
+    }
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck"
+  },
+  "devDependencies": {
+    "turbo": "^2.11.7"
+  }
+}
