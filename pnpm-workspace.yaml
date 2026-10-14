@@ -3,6 +3,14 @@ packages:
   - "packages/*"
 catalog:
   typescript: ^7.0.2
-  
+  react: ^19.2.8
+  react-dom: ^19.2.8
+  "@types/react": ^19.2.18
+  "@types/react-dom": ^19.2.7
+  "@types/node": ^24.13.3
+  "@vitejs/plugin-react": ^6.1.1
+  vite: ^8.3.0
+
+catalogMode: strict 
 engineStrict: true
 minimumReleaseAge: 1440
