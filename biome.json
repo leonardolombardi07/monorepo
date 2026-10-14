@@ -52,7 +52,16 @@
       "style": {
         "useImportType": "error",
         "useExportType": "error",
-        "noNonNullAssertion": "error"
+        "noNonNullAssertion": "error",
+        "noDefaultExport": "error",
+        "useConsistentTypeDefinitions": {
+          "level": "error",
+          "options": { "style": "type" }
+        },
+        "useFilenamingConvention": {
+          "level": "error",
+          "options": { "filenameCases": ["kebab-case"] }
+        }
       }
     }
   },
@@ -76,6 +85,10 @@
           }
         }
       }
+    },
+    {
+      "includes": ["**/*.config.ts"],
+      "linter": { "rules": { "style": { "noDefaultExport": "off" } } }
     }
   ],
   "javascript": {

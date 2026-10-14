@@ -14,7 +14,7 @@ async function writeToSelection(text: string) {
   });
 }
 
-export default function App() {
+export function App() {
   const office = useOfficeHost();
   const [health, setHealth] = useState<HealthResponse | null>(null);
   const [backendError, setBackendError] = useState<string | null>(null);
