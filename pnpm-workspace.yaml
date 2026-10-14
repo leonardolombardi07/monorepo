@@ -1,6 +1,8 @@
 packages:
   - "apps/*"
   - "packages/*"
+  
+catalogMode: manual 
 catalog:
   typescript: ^7.0.2
   react: ^19.2.8
@@ -11,6 +13,5 @@ catalog:
   "@vitejs/plugin-react": ^6.1.1
   vite: ^8.3.0
 
-catalogMode: strict 
 engineStrict: true
 minimumReleaseAge: 1440
