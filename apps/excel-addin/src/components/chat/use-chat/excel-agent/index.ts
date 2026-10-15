@@ -1,4 +1,4 @@
-import { isStepCount, type LanguageModel, ToolLoopAgent } from "ai";
+import { type InferAgentUIMessage, isStepCount, type LanguageModel, ToolLoopAgent } from "ai";
 import type { PermissionMode } from "../types";
 import { getToolApproval } from "./approval";
 import { getInstructions } from "./instructions";
@@ -38,3 +38,6 @@ export function createExcelAgent({ model, permissionMode }: ExcelAgentOptions) {
     stopWhen: isStepCount(25),
   });
 }
+
+export type ExcelAgent = ReturnType<typeof createExcelAgent>;
+export type ExcelAgentUIMessage = InferAgentUIMessage<ExcelAgent>;

@@ -1,11 +1,10 @@
-import { useChat } from "@ai-sdk/react";
-import { lastAssistantMessageIsCompleteWithApprovalResponses, type UIMessage } from "ai";
 import { cn } from "cn";
 import type { ComponentProps } from "react";
 import { Header } from "./header";
 import { Messages } from "./messages";
 import { PromptInput } from "./prompt-input";
-import { chatTransport } from "./use-chat/transport";
+import { useChat } from "./use-chat";
+import type { ExcelAgentUIMessage } from "./use-chat/excel-agent";
 
 type ExistingChat = {
   chatId: string;
@@ -19,21 +18,14 @@ export function Chat({
 }: {
   /** Omitted for a new chat, which exists only once its first message is sent. */
   chat?: ExistingChat;
-  initialMessages?: UIMessage[];
+  initialMessages: ExcelAgentUIMessage[];
   /** Replaces sending the message on this chat, e.g. to create the chat first. */
   onSubmit?: ComponentProps<typeof PromptInput>["onSubmit"];
   /** The header's title and actions; no header without them. */
 }) {
   const { messages, status, error, sendMessage, regenerate, stop, addToolApprovalResponse } =
     useChat({
-      transport: chatTransport,
-      messages: initialMessages,
-      /*
-       * A tool that needs approval ends the response with a request. Once the
-       * user answers every request, resend the conversation so the agent runs
-       * (or skips) those tools and carries on.
-       */
-      sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithApprovalResponses,
+      initialMessages: initialMessages,
     });
 
   const isEmpty = messages.length === 0;
