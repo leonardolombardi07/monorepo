@@ -1,47 +1,28 @@
-import { Button } from "@repo/ui/components/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@repo/ui/components/tooltip";
-import { cn } from "cn";
 import { Mic, MicOff, Square } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { Button } from "../button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../tooltip";
 
-export type MicrophoneButtonLabels = {
+export type ChatMicrophoneButtonLabels = {
   record: string;
-  stop: string;
-  /** Shown once the microphone was denied or is missing; clicking tries again. */
-  unavailable: string;
+  stopRecording: string;
+  /** When the microphone is denied or missing; clicking tries again. */
+  microphoneUnavailable: string;
+  /** Names the recorded file, without its extension, e.g. `time => \`Recording ${time}\``. */
+  recordingName: (time: string) => string;
 };
 
-const DEFAULT_LABELS: MicrophoneButtonLabels = {
-  record: "Record audio",
-  stop: "Stop recording",
-  unavailable: "Microphone unavailable. Click to try again",
-};
-
-/** `Recording 14-05-09`: colons aren't allowed in file names on Windows. */
-function getDefaultFileName(date: Date) {
-  return `Recording ${date.toLocaleTimeString().replaceAll(":", "-")}`;
-}
-
-export type MicrophoneButtonProps = {
+export type ChatMicrophoneButtonProps = {
   /** Called with the recording once the user stops it. */
   onRecorded: (file: File) => void;
-  /** The recording's file name, without the extension. */
-  getFileName?: (date: Date) => string;
-  labels?: Partial<MicrophoneButtonLabels>;
-  disabled?: boolean;
-  className?: string;
+  labels: ChatMicrophoneButtonLabels;
 };
 
-/** Records audio from the microphone, showing the time elapsed while it does. */
-export function MicrophoneButton({
-  onRecorded,
-  getFileName = getDefaultFileName,
-  labels,
-  disabled,
-  className,
-}: MicrophoneButtonProps) {
-  const text = { ...DEFAULT_LABELS, ...labels };
-  const { status, elapsedSeconds, start, stop } = useAudioRecorder(onRecorded, getFileName);
+export function ChatMicrophoneButton({ onRecorded, labels }: ChatMicrophoneButtonProps) {
+  const { status, elapsedSeconds, start, stop } = useAudioRecorder(
+    onRecorded,
+    labels.recordingName,
+  );
 
   if (status === "recording") {
     return (
@@ -51,22 +32,22 @@ export function MicrophoneButton({
             <Button
               variant="destructive"
               size="sm"
-              className={cn("tabular-nums", className)}
-              aria-label={text.stop}
+              className="tabular-nums"
+              aria-label={labels.stopRecording}
               onClick={stop}
-              data-testid="microphone-button"
+              data-testid="prompt-input-microphone"
             />
           }
         >
           <Square className="fill-current" />
           {formatDuration(elapsedSeconds)}
         </TooltipTrigger>
-        <TooltipContent>{text.stop}</TooltipContent>
+        <TooltipContent>{labels.stopRecording}</TooltipContent>
       </Tooltip>
     );
   }
 
-  const label = status === "error" ? text.unavailable : text.record;
+  const label = status === "error" ? labels.microphoneUnavailable : labels.record;
 
   return (
     <Tooltip>
@@ -75,11 +56,11 @@ export function MicrophoneButton({
           <Button
             variant="ghost"
             size="icon-sm"
-            className={cn("text-muted-foreground", className)}
+            className="text-muted-foreground"
             aria-label={label}
-            disabled={disabled || status === "starting"}
+            disabled={status === "starting"}
             onClick={start}
-            data-testid="microphone-button"
+            data-testid="prompt-input-microphone"
           />
         }
       >
@@ -92,7 +73,10 @@ export function MicrophoneButton({
 
 type RecorderStatus = "idle" | "starting" | "recording" | "error";
 
-function useAudioRecorder(onRecorded: (file: File) => void, getFileName: (date: Date) => string) {
+function useAudioRecorder(
+  onRecorded: (file: File) => void,
+  getRecordingName: (time: string) => string,
+) {
   const [status, setStatus] = useState<RecorderStatus>("idle");
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const recorderRef = useRef<MediaRecorder | null>(null);
@@ -116,11 +100,17 @@ function useAudioRecorder(onRecorded: (file: File) => void, getFileName: (date: 
     recorder.onstop = () => {
       // `audio/webm;codecs=opus` -> `audio/webm`
       const type = recorder.mimeType.split(";")[0] || "audio/webm";
-      onRecorded(new File(chunks, `${getFileName(new Date())}.webm`, { type }));
+      const time = new Date().toLocaleTimeString().replaceAll(":", "-");
+      const name = `${getRecordingName(time)}.webm`;
+      onRecorded(new File(chunks, name, { type }));
       setStatus("idle");
     };
     // Stopping the tracks releases the microphone (and its OS indicator)
-    recorder.addEventListener("stop", () => stream.getTracks().forEach((track) => track.stop()));
+    recorder.addEventListener("stop", () =>
+      stream.getTracks().forEach((track) => {
+        track.stop();
+      }),
+    );
 
     recorder.start();
     recorderRef.current = recorder;
