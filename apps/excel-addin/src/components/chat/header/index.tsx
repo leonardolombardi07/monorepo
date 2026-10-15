@@ -1,5 +1,3 @@
-import { SidebarTrigger, useSidebar } from "@repo/ui/components/sidebar";
-import { useIsMobile } from "@repo/ui/hooks/use-mobile";
 import { cn } from "cn";
 import type React from "react";
 import { useRef, useState } from "react";
@@ -22,9 +20,6 @@ export function Header({ chat, className }: HeaderProps) {
   const [renaming, setRenaming] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const isMobile = useIsMobile();
-
-  const { open } = useSidebar();
 
   return (
     <header
@@ -33,8 +28,6 @@ export function Header({ chat, className }: HeaderProps) {
     >
       {/* `min-w-0` lets a long title truncate instead of pushing the toggle out */}
       <div className="flex min-w-0 items-center gap-1">
-        {(!open || isMobile) && <SidebarTrigger />}
-
         <ChatTitle
           renaming={renaming}
           setRenaming={setRenaming}

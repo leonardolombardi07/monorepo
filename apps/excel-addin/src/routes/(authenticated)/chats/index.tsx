@@ -5,5 +5,9 @@ export const Route = createFileRoute("/(authenticated)/chats/")({
 });
 
 function Page() {
-  return <div>Hello</div>;
+  return (
+    <div className="px-10 py-5">
+      <h1>Chats</h1>
+    </div>
+  );
 }
