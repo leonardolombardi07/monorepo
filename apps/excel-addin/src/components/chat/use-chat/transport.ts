@@ -9,10 +9,6 @@ import { type ChatBody, chatBodySchema } from "./types";
  */
 const lastBodies = new Map<string, ChatBody>();
 
-/**
- * Until the composer has model and permission pickers, assistant-ui sends no
- * body, so every chat starts with these.
- */
 const DEFAULT_SETTINGS: ChatBody = {
   permissionMode: "manual",
   modelId: import.meta.env.VITE_OPENROUTER_MODEL || "nvidia/nemotron-3-super-120b-a12b:free",

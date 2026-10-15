@@ -41,15 +41,7 @@ type ChatSummary = {
 
 function useChats() {
   return {
-    data: [
-      {
-        id: "1",
-        title: "Hey",
-        pinned: false,
-        archived: false,
-        updatedAt: "",
-      },
-    ] as ChatSummary[],
+    data: [] as ChatSummary[],
     isPending: false,
   } as const;
 }

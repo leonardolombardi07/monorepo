@@ -7,7 +7,7 @@ import { defineCustomClientStrategy, locales } from "./paraglide/runtime.js";
  * - `paraglide/`: the compiled messages and runtime, generated and ignored by git
  *
  * The rest of the app imports from this file only. Shared packages
- * (`@repo/ui`, `@repo/ai-ui`) don't translate: the app passes them its
+ * (`@repo/ui`) don't translate: the app passes them its
  * strings as props, as in Paraglide's monorepo guide, so each app keeps its
  * own locales and strategy.
  */

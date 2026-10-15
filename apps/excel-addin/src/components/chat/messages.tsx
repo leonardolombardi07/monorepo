@@ -1,92 +1,143 @@
+import { ChatContainerContent, ChatContainerRoot } from "@repo/ui/components/chat-container";
 import {
-  ActionBarPrimitive,
-  type AssistantState,
-  AuiIf,
-  MessagePrimitive,
-} from "@assistant-ui/react";
-import { FilePart, ImagePart, MessageAttachments } from "@repo/ai-ui/components/attachment";
-import { MarkdownText } from "@repo/ai-ui/components/markdown-text";
-import {
-  EmptyPart,
-  Message,
-  MessageActions,
-  MessageContent,
-  MessageCopy,
-  MessageError,
-  MessageReload,
-} from "@repo/ai-ui/components/message";
-import { ReasoningPart } from "@repo/ai-ui/components/reasoning";
-import { MessageSources } from "@repo/ai-ui/components/sources";
-import { ToolCallPart } from "@repo/ai-ui/components/tool-call";
-import { Button } from "@repo/ui/components/button";
+  ChatMessage,
+  type ChatMessageLabels,
+  ChatPendingMessage,
+  type ChatToolApprovalResponse,
+} from "@repo/ui/components/chat-message";
+import { ScrollButton } from "@repo/ui/components/scroll-button";
+import { SystemMessage } from "@repo/ui/components/system-message";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@repo/ui/components/tooltip";
+import type { ChatStatus, UIMessage } from "ai";
+import { cn } from "cn";
+import { useMemo } from "react";
 import { m } from "@/lib/internationalization";
+import { getToolTitle } from "./use-chat/excel-agent";
 
-/* Defined once, so parts don't re-render with a new `components` object */
-
-const USER_PARTS = { Text: MarkdownText, File: FilePart, Image: ImagePart };
-
-const ASSISTANT_PARTS = {
-  Text: MarkdownText,
-  Reasoning: ReasoningPart,
-  File: FilePart,
-  Image: ImagePart,
-  Empty: EmptyPart,
-  tools: { Fallback: ToolCallPart },
-  // No `Source`: `MessageSources` lists them together under the response
+type MessagesProps = {
+  messages: UIMessage[];
+  status: ChatStatus;
+  /** Why the last response failed, when `status` is `error`. */
+  error: Error | undefined;
+  /**
+   * Shaped like `useChat().regenerate`, so that can be passed straight in.
+   * Without a message, retries the last response.
+   */
+  onRegenerate: (options?: { messageId: string }) => void;
+  /** Shaped like `useChat().addToolApprovalResponse`. */
+  onToolApprovalResponse: (response: ChatToolApprovalResponse) => void;
+  className?: string;
 };
 
-/** Not while a tool awaits approval, nor after an error, which offers its own retry. */
-function canAct(s: AssistantState) {
-  const status = s.message.status;
+/**
+ * The conversation, following new content down unless the user scrolls up.
+ * Keep the callbacks stable, so streaming only re-renders the last message.
+ */
+export function Messages({
+  messages,
+  status,
+  error,
+  onRegenerate,
+  onToolApprovalResponse,
+  className,
+}: MessagesProps) {
+  // Stable, as `ChatMessage` is memoized. Changing the locale reloads the page
+  const labels = useMemo(getMessageLabels, []);
+  const isBusy = status === "submitted" || status === "streaming";
+
   return (
-    status?.type !== "requires-action" &&
-    !(status?.type === "incomplete" && status.reason === "error")
+    <ChatContainerRoot
+      className={cn("relative", className)}
+      aria-label={m.thread_label()}
+      // Screen readers wait for the response to finish instead of reading every token
+      aria-busy={isBusy}
+      data-testid="messages"
+    >
+      {/* Lined up with the prompt input */}
+      <ChatContainerContent className="mx-auto max-w-3xl gap-6 px-4 pt-6 pb-10">
+        {messages.map((message, index) => {
+          const isLast = index === messages.length - 1;
+          return (
+            <ChatMessage
+              key={message.id}
+              message={message}
+              isStreaming={isLast && status === "streaming"}
+              canRegenerate={isLast && message.role === "assistant" && status === "ready"}
+              onRegenerate={onRegenerate}
+              onToolApprovalResponse={onToolApprovalResponse}
+              labels={labels}
+            />
+          );
+        })}
+
+        {/* Once it streams, the response shows this itself until it has content */}
+        {status === "submitted" && <ChatPendingMessage labels={labels} />}
+
+        {status === "error" && (
+          <SystemMessage
+            variant="error"
+            fill
+            role="alert"
+            cta={{
+              label: m.message_retry(),
+              onClick: () => onRegenerate(),
+            }}
+            data-testid="messages-error"
+          >
+            {m.thread_error()}
+            {error?.message && <span className="block text-xs opacity-80">{error.message}</span>}
+
+            <pre className="wrap-break-word mt-2 max-h-40 overflow-auto whitespace-pre-wrap rounded-md border bg-muted/40 p-2 font-mono text-xs">
+              {error?.stack}
+            </pre>
+          </SystemMessage>
+        )}
+      </ChatContainerContent>
+
+      <Tooltip>
+        <TooltipTrigger
+          render={
+            <ScrollButton
+              className="absolute bottom-3 left-1/2 -translate-x-1/2 shadow-sm"
+              aria-label={m.thread_scroll_to_bottom()}
+              data-testid="messages-scroll-to-bottom"
+            />
+          }
+        />
+        <TooltipContent>{m.thread_scroll_to_bottom()}</TooltipContent>
+      </Tooltip>
+    </ChatContainerRoot>
   );
 }
 
-export function UserMessage() {
-  return (
-    <Message className="items-end" data-testid="message-user">
-      <MessageAttachments className="justify-end" />
-      <div className="relative max-w-[85%]">
-        <MessageContent variant="bubble" className="max-w-none">
-          <MessagePrimitive.Parts components={USER_PARTS} />
-        </MessageContent>
-        {/* Beside the bubble, so showing it on hover doesn't move the thread */}
-        <MessageActions
-          autohide="always"
-          className="absolute top-1/2 right-full mr-1 -translate-y-1/2"
-        >
-          <MessageCopy tooltip={m.message_copy()} copiedTooltip={m.message_copied()} />
-        </MessageActions>
-      </div>
-    </Message>
-  );
-}
-
-export function AssistantMessage() {
-  return (
-    <Message data-testid="message-assistant">
-      <MessageContent>
-        <MessagePrimitive.Parts components={ASSISTANT_PARTS} />
-      </MessageContent>
-      <MessageSources label={m.message_sources()} />
-      <MessageError>
-        <ActionBarPrimitive.Reload
-          render={<Button variant="outline" size="xs" data-testid="message-retry" />}
-        >
-          {m.message_retry()}
-        </ActionBarPrimitive.Reload>
-      </MessageError>
-      <AuiIf condition={canAct}>
-        {/* Keeps its height while the actions hide, so the thread doesn't jump on hover */}
-        <div className="-ml-1.5 flex h-7 items-center">
-          <MessageActions>
-            <MessageCopy tooltip={m.message_copy()} copiedTooltip={m.message_copied()} />
-            <MessageReload tooltip={m.message_regenerate()} />
-          </MessageActions>
-        </div>
-      </AuiIf>
-    </Message>
-  );
+function getMessageLabels(): ChatMessageLabels {
+  return {
+    copy: m.message_copy(),
+    copied: m.message_copied(),
+    regenerate: m.message_regenerate(),
+    pending: m.message_pending(),
+    attachments: m.message_attachments(),
+    image: m.message_image(),
+    sources: m.message_sources(),
+    reasoning: m.message_reasoning(),
+    reasoningStreaming: m.message_reasoning_streaming(),
+    toolStatus: {
+      preparing: m.message_tool_preparing(),
+      running: m.message_tool_running(),
+      "awaiting-approval": m.message_tool_awaiting_approval(),
+      approved: m.message_tool_approved(),
+      completed: m.message_tool_completed(),
+      failed: m.message_tool_failed(),
+      denied: m.message_tool_denied(),
+      stopped: m.message_tool_stopped(),
+    },
+    toolInput: m.message_tool_input(),
+    toolOutput: m.message_tool_output(),
+    toolError: m.message_tool_error(),
+    toolReason: m.message_tool_reason(),
+    toolAllow: m.message_tool_allow(),
+    toolDeny: m.message_tool_deny(),
+    toolApprovalRequest: (name) => m.message_tool_approval_request({ name }),
+    toolTitle: getToolTitle,
+  };
 }

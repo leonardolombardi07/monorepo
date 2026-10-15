@@ -6,5 +6,5 @@ export const Route = createFileRoute("/(authenticated)/new/")({
 });
 
 function Page() {
-  return <Chat />;
+  return <Chat initialMessages={[]} />;
 }

@@ -4,6 +4,8 @@ import { getToolApproval } from "./approval";
 import { getInstructions } from "./instructions";
 import { READ_ONLY_TOOLS, tools } from "./tools";
 
+export { getToolTitle } from "./tools";
+
 /*
  * The Excel agent. This file is the folder's public API: the rest of the app
  * imports only what is exported here, so everything else in the folder can

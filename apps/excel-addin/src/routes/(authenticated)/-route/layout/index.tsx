@@ -2,7 +2,6 @@ import { SidebarInset, SidebarProvider, useSidebar } from "@repo/ui/components/s
 import { Outlet, useRouter } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { SettingsDialog } from "../settings-dialog";
-import { Header } from "./header";
 import { Sidebar } from "./sidebar";
 
 /*
@@ -18,7 +17,6 @@ export function Layout() {
         <CloseDrawerOnNavigation />
         <Sidebar />
         <SidebarInset className="min-w-0 overflow-hidden">
-          <Header />
           <div className="min-h-0 flex-1 overflow-auto">
             <Outlet />
           </div>

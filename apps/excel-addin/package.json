@@ -15,10 +15,8 @@
     "addin:stop": "office-addin-debugging stop manifest.xml"
   },
   "dependencies": {
-    "@assistant-ui/ai-sdk": "^0.0.12",
-    "@assistant-ui/react": "catalog:",
+    "@ai-sdk/react": "^4.0.142",
     "@openrouter/ai-sdk-provider": "^3.1.0",
-    "@repo/ai-ui": "workspace:*",
     "@repo/api-client": "workspace:*",
     "@repo/ui": "workspace:*",
     "@tanstack/react-query": "^5.104.2",

@@ -12,6 +12,9 @@ export function Header() {
     <header className="flex h-10 shrink-0 items-center gap-1 border-b bg-background px-2">
       <div className="flex items-center gap-1">
         <SidebarTrigger />
+
+        <h1>Cowork</h1>
+
         <Button
           variant="ghost"
           size="icon"
