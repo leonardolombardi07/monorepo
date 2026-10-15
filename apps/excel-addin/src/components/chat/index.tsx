@@ -6,16 +6,16 @@ import {
   Thread as UIThread,
 } from "@repo/ai-ui/components/thread";
 import { cn } from "cn";
-import { useAssistantRuntime } from "@/lib/chat";
 import { m } from "@/lib/internationalization";
 import { Composer } from "./composer";
 import { AssistantMessage, UserMessage } from "./messages";
+import { useChat } from "./use-chat";
 
 /** Keeps lines readable on a wide pane; the viewport still scrolls at the pane's edge. */
 const COLUMN = "mx-auto w-full max-w-3xl";
 
 export function Chat() {
-  const runtime = useAssistantRuntime();
+  const runtime = useChat();
 
   return (
     <AssistantRuntimeProvider runtime={runtime}>
