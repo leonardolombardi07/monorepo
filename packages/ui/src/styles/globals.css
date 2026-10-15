@@ -6,6 +6,10 @@
 @custom-variant dark (&:is(.dark *));
 @source "../";
 
+button {
+  cursor: pointer;
+}
+
 @theme inline {
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);

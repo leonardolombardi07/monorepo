@@ -23,13 +23,13 @@ function createAppRouter() {
   });
 }
 
-// Module augmentation needs an interface; this is what types `useNavigate`, `Link`, etc.
-// declare module "@tanstack/react-router" {
-//   type Register = {
-//     router: ReturnType<typeof createAppRouter>;
-//   };
-// }
-
+// Types `useNavigate`, `Link`, `Route` and friends with this app's routes
+declare module "@tanstack/react-router" {
+  // biome-ignore lint/style/useConsistentTypeDefinitions: augmentation only merges into an interface
+  interface Register {
+    router: ReturnType<typeof createAppRouter>;
+  }
+}
 export function RouterProvider() {
   const [router] = useState(() => createAppRouter());
   return <TanstackRouterProvider router={router} />;

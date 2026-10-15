@@ -9,19 +9,31 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as authenticatedRouteRouteImport } from './routes/(authenticated)/route'
 import { Route as authenticatedhomeIndexRouteImport } from './routes/(authenticated)/(home)/index'
+import { Route as authenticatedChatsIndexRouteImport } from './routes/(authenticated)/chats/index'
 import { Route as authenticatedNewIndexRouteImport } from './routes/(authenticated)/new/index'
 import { Route as notAuthenticatedLoginIndexRouteImport } from './routes/(not-authenticated)/login/index'
+import { Route as authenticatedChatsChatIdIndexRouteImport } from './routes/(authenticated)/chats/$chatId/index'
 
-const authenticatedhomeIndexRoute = authenticatedhomeIndexRouteImport.update({
-  id: '/(authenticated)/(home)/',
-  path: '/',
+const authenticatedRouteRoute = authenticatedRouteRouteImport.update({
+  id: '/(authenticated)',
   getParentRoute: () => rootRouteImport,
 } as any)
+const authenticatedhomeIndexRoute = authenticatedhomeIndexRouteImport.update({
+  id: '/(home)/',
+  path: '/',
+  getParentRoute: () => authenticatedRouteRoute,
+} as any)
+const authenticatedChatsIndexRoute = authenticatedChatsIndexRouteImport.update({
+  id: '/chats/',
+  path: '/chats/',
+  getParentRoute: () => authenticatedRouteRoute,
+} as any)
 const authenticatedNewIndexRoute = authenticatedNewIndexRouteImport.update({
-  id: '/(authenticated)/new/',
+  id: '/new/',
   path: '/new/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => authenticatedRouteRoute,
 } as any)
 const notAuthenticatedLoginIndexRoute =
   notAuthenticatedLoginIndexRouteImport.update({
@@ -29,56 +41,85 @@ const notAuthenticatedLoginIndexRoute =
     path: '/login/',
     getParentRoute: () => rootRouteImport,
   } as any)
+const authenticatedChatsChatIdIndexRoute =
+  authenticatedChatsChatIdIndexRouteImport.update({
+    id: '/chats/$chatId/',
+    path: '/chats/$chatId/',
+    getParentRoute: () => authenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof authenticatedhomeIndexRoute
+  '/chats/': typeof authenticatedChatsIndexRoute
   '/new/': typeof authenticatedNewIndexRoute
   '/login/': typeof notAuthenticatedLoginIndexRoute
+  '/chats/$chatId/': typeof authenticatedChatsChatIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof authenticatedhomeIndexRoute
+  '/chats': typeof authenticatedChatsIndexRoute
   '/new': typeof authenticatedNewIndexRoute
   '/login': typeof notAuthenticatedLoginIndexRoute
+  '/chats/$chatId': typeof authenticatedChatsChatIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/(authenticated)': typeof authenticatedRouteRouteWithChildren
   '/(authenticated)/(home)/': typeof authenticatedhomeIndexRoute
+  '/(authenticated)/chats/': typeof authenticatedChatsIndexRoute
   '/(authenticated)/new/': typeof authenticatedNewIndexRoute
   '/(not-authenticated)/login/': typeof notAuthenticatedLoginIndexRoute
+  '/(authenticated)/chats/$chatId/': typeof authenticatedChatsChatIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/new/' | '/login/'
+  fullPaths: '/' | '/chats/' | '/new/' | '/login/' | '/chats/$chatId/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/new' | '/login'
+  to: '/' | '/chats' | '/new' | '/login' | '/chats/$chatId'
   id:
     | '__root__'
+    | '/(authenticated)'
     | '/(authenticated)/(home)/'
+    | '/(authenticated)/chats/'
     | '/(authenticated)/new/'
     | '/(not-authenticated)/login/'
+    | '/(authenticated)/chats/$chatId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  authenticatedhomeIndexRoute: typeof authenticatedhomeIndexRoute
-  authenticatedNewIndexRoute: typeof authenticatedNewIndexRoute
+  authenticatedRouteRoute: typeof authenticatedRouteRouteWithChildren
   notAuthenticatedLoginIndexRoute: typeof notAuthenticatedLoginIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/(authenticated)': {
+      id: '/(authenticated)'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof authenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/(authenticated)/(home)/': {
       id: '/(authenticated)/(home)/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof authenticatedhomeIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof authenticatedRouteRoute
+    }
+    '/(authenticated)/chats/': {
+      id: '/(authenticated)/chats/'
+      path: '/chats'
+      fullPath: '/chats/'
+      preLoaderRoute: typeof authenticatedChatsIndexRouteImport
+      parentRoute: typeof authenticatedRouteRoute
     }
     '/(authenticated)/new/': {
       id: '/(authenticated)/new/'
       path: '/new'
       fullPath: '/new/'
       preLoaderRoute: typeof authenticatedNewIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof authenticatedRouteRoute
     }
     '/(not-authenticated)/login/': {
       id: '/(not-authenticated)/login/'
@@ -87,12 +128,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof notAuthenticatedLoginIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(authenticated)/chats/$chatId/': {
+      id: '/(authenticated)/chats/$chatId/'
+      path: '/chats/$chatId'
+      fullPath: '/chats/$chatId/'
+      preLoaderRoute: typeof authenticatedChatsChatIdIndexRouteImport
+      parentRoute: typeof authenticatedRouteRoute
+    }
   }
 }
 
-const rootRouteChildren: RootRouteChildren = {
+interface authenticatedRouteRouteChildren {
+  authenticatedhomeIndexRoute: typeof authenticatedhomeIndexRoute
+  authenticatedChatsIndexRoute: typeof authenticatedChatsIndexRoute
+  authenticatedNewIndexRoute: typeof authenticatedNewIndexRoute
+  authenticatedChatsChatIdIndexRoute: typeof authenticatedChatsChatIdIndexRoute
+}
+
+const authenticatedRouteRouteChildren: authenticatedRouteRouteChildren = {
   authenticatedhomeIndexRoute: authenticatedhomeIndexRoute,
+  authenticatedChatsIndexRoute: authenticatedChatsIndexRoute,
   authenticatedNewIndexRoute: authenticatedNewIndexRoute,
+  authenticatedChatsChatIdIndexRoute: authenticatedChatsChatIdIndexRoute,
+}
+
+const authenticatedRouteRouteWithChildren =
+  authenticatedRouteRoute._addFileChildren(authenticatedRouteRouteChildren)
+
+const rootRouteChildren: RootRouteChildren = {
+  authenticatedRouteRoute: authenticatedRouteRouteWithChildren,
   notAuthenticatedLoginIndexRoute: notAuthenticatedLoginIndexRoute,
 }
 export const routeTree = rootRouteImport

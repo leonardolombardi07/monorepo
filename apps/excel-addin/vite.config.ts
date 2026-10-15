@@ -1,12 +1,12 @@
 import { fileURLToPath } from "node:url";
+import { paraglideVitePlugin } from "@inlang/paraglide-js";
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
 import { getHttpsServerOptions } from "office-addin-dev-certs";
 import { defineConfig } from "vite";
 
-/** Must match every `https://localhost:3000` URL in `manifest.xml`. */
-const DEV_SERVER_PORT = 3000;
+const DEV_SERVER_PORT = 3001;
 
 /** Resolves a path relative to this file, so the config works from any cwd (e.g. Turbo). */
 function fromRoot(path: string) {
@@ -27,6 +27,8 @@ export default defineConfig(async ({ command }) => ({
       routesDirectory: fromRoot("./src/routes"),
       generatedRouteTree: fromRoot("./src/routeTree.gen.ts"),
     }),
+    // Compiles the messages on start and on change; options in the project's `paraglide.config.ts`
+    paraglideVitePlugin({ project: "./src/lib/internationalization/project.inlang" }),
     react(),
     tailwindcss(),
   ],

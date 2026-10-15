@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "typecheck": "tsc",
+    "i18n": "paraglide-js compile --project ./src/lib/internationalization/project.inlang",
+    "typecheck": "pnpm i18n && tsc",
     "preview": "vite preview",
     "certs": "office-addin-dev-certs install",
     "addin:validate": "office-addin-manifest validate manifest.xml",
@@ -14,15 +15,24 @@
     "addin:stop": "office-addin-debugging stop manifest.xml"
   },
   "dependencies": {
+    "@assistant-ui/ai-sdk": "^0.0.12",
+    "@assistant-ui/react": "catalog:",
+    "@openrouter/ai-sdk-provider": "^3.1.0",
+    "@repo/ai-ui": "workspace:*",
     "@repo/api-client": "workspace:*",
     "@repo/ui": "workspace:*",
     "@tanstack/react-query": "^5.104.2",
     "@tanstack/react-router": "^1.170.44",
-    "cn": "^0.4.0",
+    "ai": "^7.0.139",
+    "cn": "catalog:",
+    "lucide-react": "catalog:",
     "react": "catalog:",
-    "react-dom": "catalog:"
+    "react-dom": "catalog:",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@inlang/paraglide-js": "^2.27.0",
+    "@inlang/plugin-message-format": "^4.5.3",
     "@repo/typescript-config": "workspace:*",
     "@tailwindcss/vite": "catalog:",
     "@tanstack/react-query-devtools": "^5.104.2",
